@@ -16,16 +16,15 @@ export async function PostGame(req, res) {
     return res.status(400).send("Dados inválidos");
   }
   try {
-    const gameExists = await db.query(
-      "SELECT * FROM games WHERE name=$1;",
-      [name]
-    );
+    const gameExists = await db.query("SELECT * FROM games WHERE name=$1;", [
+      name,
+    ]);
 
     if (gameExists.rows.length > 0) {
       return res.status(409).send("Jogo já existente");
     }
     await db.query(
-      "INSERT INTO games (name, image, stockTotal, pricePerDay) VALUES ($1, $2, $3, $4);",
+      `INSERT INTO games (name, image, "stockTotal", "pricePerDay") VALUES ($1, $2, $3, $4);`,
       [name, image, stockTotal, pricePerDay]
     );
     res.status(201).send("Jogo adicionado com sucesso");
@@ -33,4 +32,4 @@ export async function PostGame(req, res) {
     console.log(error);
     res.status(500).send(error);
   }
-}
+};
