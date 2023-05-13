@@ -101,8 +101,8 @@ export async function DeleteRental(req, res) {
       return res.status(404).send("Aluguel não encontrado");
     }
 
-    if (rental.rows[0].returnDate !== null) {
-      return res.status(400).send("Aluguel já finalizado");
+    if (rental.rows[0].returnDate === null) {
+      return res.status(400).send("Aluguel não finalizado");
     }
 
     await db.query(
@@ -142,7 +142,7 @@ export async function ReturnRental(req, res) {
 
     const currentDate = new Date();
     const daysLate =
-      Math.ceil(
+      Math.floor(
         (currentDate - returnedRental.rentDate) / (1000 * 60 * 60 * 24)
       ) - returnedRental.daysRented;
     const game = await db.query(
