@@ -10,7 +10,8 @@ export async function GetCustomer(req, res) {
         return {
           id: customer.id,
           name: customer.name,
-          email: customer.email,
+          phone: customer.phone,
+          cpf: customer.cpf,
           birthday: dayjs(customer.birthday).format("YYYY-MM-DD"),
         };
       });
@@ -24,7 +25,8 @@ export async function GetCustomer(req, res) {
         const formattedCustomer = {
           id: customer.rows[0].id,
           name: customer.rows[0].name,
-          email: customer.rows[0].email,
+          phone: customer.phone,
+          cpf: customer.cpf,
           birthday: dayjs(customer.rows[0].birthday).format("YYYY-MM-DD"),
         };
         res.send(formattedCustomer);
