@@ -135,22 +135,30 @@ export async function ReturnRental(req, res) {
     if (rental.rows[0].returnDate !== null) {
       return res.status(400).send("Aluguel já finalizado");
     }
-
-    const returnDate = new Date();
-    const daysLate = Math.ceil(
-      (returnDate - rental.rows[0].rentDate) / (1000 * 60 * 60 * 24)
+    const returnedRental = rental.rows[0];
+    const currentDate = new Date();
+    const daysLate =
+      Math.ceil(
+        (currentDate - returnedRental.rentDate) / (1000 * 60 * 60 * 24)
+      ) - returnedRental.daysRented;
+    const game = await db.query(
+      `
+      SELECT * FROM games
+      WHERE id = $1
+    `,
+      [returnedRental.gameId]
     );
-    const delayFee =
-      daysLate > rental.rows[0].daysRented
-        ? (daysLate - rental.rows[0].daysRented) *
-          rental.rows[0].gamePricePerDay
-        : 0;
+
+    const pricePerDay = game.rows[0].pricePerDay;
+    const delayFee = daysLate > 0 ? daysLate * pricePerDay : 0;
 
     await db.query(
       `
-      UPDATE rentals SET "returnDate" = $1, "delayFee" = $2 WHERE id = $3
+      UPDATE rentals
+      SET returnDate = $1, delayFee = $2
+      WHERE id = $3
     `,
-      [returnDate, delayFee, rentalId]
+      [currentDate, delayFee, rentalId]
     );
 
     res.sendStatus(200);
