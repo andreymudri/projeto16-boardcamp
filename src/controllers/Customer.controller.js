@@ -6,12 +6,15 @@ export async function GetCustomer(req, res) {
   try {
     if (!paramID) {
       customer = await db.query("SELECT * FROM customers");
+      res.send(customer.rows);
     } else {
       customer = await db.query("SELECT * FROM customers WHERE id = $1", [
         paramID,
       ]);
+      customer.rows.length > 0
+        ? res.send(customer.rows[0])
+        : res.sendStatus(404);
     }
-    res.send(customer.rows[0]);
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
@@ -57,7 +60,7 @@ export async function EditCustomer(req, res) {
     if (updatecustomer.rowCount === 0) {
       return res.sendStatus(404);
     }
-    res.sendStatus(204);
+    res.sendStatus(200);
   } catch (error) {
     console.log(error);
     res.sendStatus(500);

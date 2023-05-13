@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/app.js"
+    "start": "node src/app.js",
+    "devstart": "nodemon src/app.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,5 +17,8 @@
     "express": "^4.18.2",
     "joi": "^17.9.2",
     "pg": "^8.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
   }
 }
