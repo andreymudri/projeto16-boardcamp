@@ -119,23 +119,27 @@ export async function DeleteRental(req, res) {
   }
 }
 export async function ReturnRental(req, res) {
-  try {
-    const rentalId = req.params.id;
+  const rentalId = req.params.id;
 
+  try {
     const rental = await db.query(
       `
-      SELECT * FROM rentals WHERE id = $1
-    `,
+    SELECT * FROM rentals
+    WHERE id = $1
+  `,
       [rentalId]
     );
-    if (rental.rowCount === 0) {
+
+    if (rental.rows.length === 0) {
       return res.status(404).send("Aluguel não encontrado");
     }
 
-    if (rental.rows[0].returnDate !== null) {
+    const returnedRental = rental.rows[0];
+
+    if (returnedRental.returnDate !== null) {
       return res.status(400).send("Aluguel já finalizado");
     }
-    const returnedRental = rental.rows[0];
+
     const currentDate = new Date();
     const daysLate =
       Math.ceil(
@@ -143,9 +147,9 @@ export async function ReturnRental(req, res) {
       ) - returnedRental.daysRented;
     const game = await db.query(
       `
-      SELECT * FROM games
-      WHERE id = $1
-    `,
+    SELECT * FROM games
+    WHERE id = $1
+  `,
       [returnedRental.gameId]
     );
 
@@ -154,16 +158,16 @@ export async function ReturnRental(req, res) {
 
     await db.query(
       `
-      UPDATE rentals
-      SET returnDate = $1, delayFee = $2
-      WHERE id = $3
-    `,
+    UPDATE rentals
+    SET "returnDate" = $1, "delayFee" = $2
+    WHERE id = $3
+  `,
       [currentDate, delayFee, rentalId]
     );
 
     res.sendStatus(200);
   } catch (error) {
     console.log(error);
-    res.status(500);
+    res.status(500).send("Error returning rental");
   }
 }

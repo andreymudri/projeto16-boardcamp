@@ -25,8 +25,8 @@ export async function GetCustomer(req, res) {
         const formattedCustomer = {
           id: customer.rows[0].id,
           name: customer.rows[0].name,
-          phone: customer.phone,
-          cpf: customer.cpf,
+          phone: customer.phone[0],
+          cpf: customer.cpf[0],
           birthday: dayjs(customer.rows[0].birthday).format("YYYY-MM-DD"),
         };
         res.send(formattedCustomer);
