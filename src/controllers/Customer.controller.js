@@ -1,19 +1,36 @@
 import db from "../database/database.js";
-
+import dayjs from "dayjs";
 export async function GetCustomer(req, res) {
   const paramID = req.params.id;
   let customer;
   try {
     if (!paramID) {
       customer = await db.query("SELECT * FROM customers");
-      res.send(customer.rows);
+      const customersWithFormattedBirthday = customer.rows.map((customer) => {
+        return {
+          id: customer.id,
+          name: customer.name,
+          email: customer.email,
+          birthday: dayjs(customer.birthday).format("YYYY-MM-DD"),
+        };
+      });
+
+      res.status(200).send(customersWithFormattedBirthday);
     } else {
       customer = await db.query("SELECT * FROM customers WHERE id = $1", [
         paramID,
       ]);
-      customer.rows.length > 0
-        ? res.send(customer.rows[0])
-        : res.sendStatus(404);
+      if (customer.rows.length > 0) {
+        const formattedCustomer = {
+          id: customer.rows[0].id,
+          name: customer.rows[0].name,
+          email: customer.rows[0].email,
+          birthday: dayjs(customer.rows[0].birthday).format("YYYY-MM-DD"),
+        };
+        res.send(formattedCustomer);
+      } else {
+        res.sendStatus(404);
+      }
     }
   } catch (error) {
     console.log(error);

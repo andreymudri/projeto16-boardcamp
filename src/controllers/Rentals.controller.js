@@ -152,6 +152,8 @@ export async function ReturnRental(req, res) {
     `,
       [returnDate, delayFee, rentalId]
     );
+
+    res.sendStatus(200);
   } catch (error) {
     console.log(error);
     res.status(500);
