@@ -3,6 +3,8 @@ import cors from "cors";
 import Rentalsroute from "./routes/rentals/RentalsRouter.js";
 import Gamesroute from "./routes/games/GamesRouter.js";
 import Customerroute from "./routes/customers/CustomerRouter.js";
+import dotenv from "dotenv";
+
 const app = express();
 app.use(cors());
 app.use(express.json());
